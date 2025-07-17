@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finanzas App - Inicio</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <main id="main">
+    <!-- Pantalla de bienvenida -->
+    <section id="welcome" class="active">
+      <h1>Bienvenido a Finanzas App</h1>
+      <p>Controla tus ingresos y gastos de manera fácil</p>
+      <button onclick="showSection('login')">Iniciar sesión</button>
+      <button onclick="showSection('register')">Registrarse</button>
+    </section>
+
+    <!-- Formulario de Login -->
+    <section id="login">
+      <h2>Iniciar Sesión</h2>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Correo electrónico" required />
+        <input type="password" id="loginPassword" placeholder="Contraseña" required />
+        <button type="submit">Entrar</button>
+        <p>¿No tienes cuenta? <a href="#" onclick="showSection('register')">Regístrate aquí</a></p>
+        <p><a href="#" onclick="showSection('welcome')">Volver al inicio</a></p>
+      </form>
+    </section>
+
+    <!-- Formulario de Registro -->
+    <section id="register">
+      <h2>Crear Cuenta</h2>
+      <form id="registerForm">
+        <input type="text" id="registerName" placeholder="Nombre completo" required />
+        <input type="email" id="registerEmail" placeholder="Correo electrónico" required />
+        <input type="password" id="registerPassword" placeholder="Contraseña" required />
+        <input type="password" id="registerConfirm" placeholder="Confirmar contraseña" required />
+        <button type="submit">Registrarse</button>
+        <p>¿Ya tienes cuenta? <a href="#" onclick="showSection('login')">Inicia sesión</a></p>
+        <p><a href="#" onclick="showSection('welcome')">Volver al inicio</a></p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // Mostrar secciones
+    function showSection(sectionId) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(sectionId).classList.add("active");
+    }
+
+    // Registro y login usando API REST
+    document.addEventListener("DOMContentLoaded", function() {
+      const registerForm = document.getElementById("registerForm");
+      const loginForm = document.getElementById("loginForm");
+
+      // Registro
+      if (registerForm) {
+        registerForm.addEventListener("submit", async function(e) {
+          e.preventDefault();
+          const name = document.getElementById("registerName").value.trim();
+          const email = document.getElementById("registerEmail").value.trim();
+          const password = document.getElementById("registerPassword").value;
+          const confirm = document.getElementById("registerConfirm").value;
+          if (!name || !email || !password || !confirm) return alert("Completa todos los campos.");
+          if (password !== confirm) return alert("Las contraseñas no coinciden.");
+          // Verifica si el usuario ya existe
+          const res = await fetch('http://localhost:3001/users?email=' + encodeURIComponent(email));
+          const users = await res.json();
+          if (users.length > 0) return alert("El correo ya está registrado.");
+          // Registra el usuario
+          await fetch('http://localhost:3001/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password, balance: 0, transactions: [] })
+          });
+          alert("¡Registro exitoso!");
+          registerForm.reset();
+          showSection('login');
+        });
+      }
+
+      // Login
+      if (loginForm) {
+        loginForm.addEventListener("submit", async function(e) {
+          e.preventDefault();
+          const email = document.getElementById("loginEmail").value.trim();
+          const password = document.getElementById("loginPassword").value;
+          const res = await fetch('http://localhost:3001/users?email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(password));
+          const users = await res.json();
+          if (users.length === 0) return alert("Correo o contraseña incorrectos.");
+          localStorage.setItem("activeUser", JSON.stringify(users[0]));
+          loginForm.reset();
+          window.location.href = "app.html";
+        });
+      }
+    });
+
+    // Envío de dinero entre usuarios usando API REST
+    async function enviarDinero() {
+      const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+      const destinoEmail = document.getElementById("emailDestino").value.trim();
+      const monto = parseFloat(document.getElementById("montoEnviar").value);
+      if (!destinoEmail || isNaN(monto) || monto <= 0) {
+        alert("Datos inválidos");
+        return;
+      }
+      if (destinoEmail === activeUser.email) {
+        alert("No puedes enviarte dinero a ti mismo.");
+        return;
+      }
+      if (monto > activeUser.balance) {
+        alert("Saldo insuficiente.");
+        return;
+      }
+      // Buscar destinatario en la API
+      const res = await fetch('http://localhost:3001/users?email=' + encodeURIComponent(destinoEmail));
+      const destinatarios = await res.json();
+      if (destinatarios.length === 0) {
+        alert("Destinatario no encontrado.");
+        return;
+      }
+      const destinatario = destinatarios[0];
+      // Actualizar saldo y transacciones del emisor
+      activeUser.balance -= monto;
+      activeUser.transactions.push({ tipo: "Envío", monto: -monto, fecha: new Date().toLocaleString(), a: destinoEmail });
+      await fetch(`http://localhost:3001/users/${activeUser.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ balance: activeUser.balance, transactions: activeUser.transactions })
+      });
+      localStorage.setItem("activeUser", JSON.stringify(activeUser));
+      // Actualizar saldo y transacciones del destinatario
+      destinatario.balance += monto;
+      destinatario.transactions.push({ tipo: "Recibido", monto, fecha: new Date().toLocaleString(), de: activeUser.email });
+      await fetch(`http://localhost:3001/users/${destinatario.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ balance: destinatario.balance, transactions: destinatario.transactions })
+      });
+      alert("Dinero enviado correctamente");
+      document.getElementById("emailDestino").value = "";
+      document.getElementById("montoEnviar").value = "";
+      document.getElementById("formEnviar").style.display = "none";
+      // Puedes actualizar la vista del historial aquí si lo deseas
+    }
+    window.enviarDinero = enviarDinero;
+  </script>
+</body>
+</html>

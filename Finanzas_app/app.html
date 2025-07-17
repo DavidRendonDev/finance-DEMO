@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finanzas App - Panel</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <main class="dashboard">
+    <h1>Bienvenido, <span id="userName"></span> 👋</h1>
+    <h2>Saldo: $<span id="userBalance">0</span></h2>
+
+    <div class="actions">
+      <button onclick="mostrarFormulario('agregar')">➕ Agregar Dinero</button>
+      <button onclick="mostrarFormulario('enviar')">💸 Enviar Dinero</button>
+      <button onclick="cerrarSesion()">🔒 Cerrar sesión</button>
+    </div>
+
+    <!-- Formularios dinámicos -->
+    <section id="formAgregar" class="formulario">
+      <h3>Agregar dinero</h3>
+      <input type="number" id="montoAgregar" placeholder="Monto" min="1"/>
+      <button onclick="agregarDinero()">Confirmar</button>
+    </section>
+
+    <section id="formEnviar" class="formulario">
+      <h3>Enviar dinero</h3>
+      <input type="email" id="emailDestino" placeholder="Correo del destinatario" />
+      <input type="number" id="montoEnviar" placeholder="Monto a enviar" min="1"/>
+      <button onclick="enviarDinero()">Confirmar</button>
+    </section>
+
+    <h3>Historial de transacciones</h3>
+    <ul id="historial"></ul>
+
+    <canvas id="chart" width="400" height="200"></canvas>
+  </main>
+
+  <script>
+  // Verificación robusta de usuario activo
+  document.addEventListener("DOMContentLoaded", function() {
+    const activeUser = localStorage.getItem("activeUser");
+    if (!activeUser) {
+      window.location.href = "index.html";
+    }
+  });
+  </script>
+  <script src="script.js"></script>
+  <script src="charts.js"></script>
+</body>
+</html>

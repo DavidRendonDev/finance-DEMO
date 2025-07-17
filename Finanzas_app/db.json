@@ -1,0 +1,118 @@
+{
+  "users": [
+    {
+      "id": "61e3",
+      "name": "santi",
+      "email": "santi@gmail.com",
+      "password": "hola123",
+      "balance": 23000,
+      "transactions": [
+        {
+          "tipo": "Recibido",
+          "monto": 10000,
+          "fecha": "17/7/2025, 10:33:58 a. m.",
+          "de": "goku@gmail.com"
+        },
+        {
+          "tipo": "Recibido",
+          "monto": 5000,
+          "fecha": "17/7/2025, 10:35:31 a. m.",
+          "de": "goku@gmail.com"
+        },
+        {
+          "tipo": "Recibido",
+          "monto": 4000,
+          "fecha": "17/7/2025, 10:37:17 a. m.",
+          "de": "salo@g"
+        },
+        {
+          "tipo": "Recibido",
+          "monto": 4000,
+          "fecha": "17/7/2025, 10:39:30 a. m.",
+          "de": "salo@g"
+        }
+      ]
+    },
+    {
+      "id": "1e40",
+      "name": "goku",
+      "email": "goku@gmail.com",
+      "password": "hola123",
+      "balance": 407005000,
+      "transactions": [
+        {
+          "tipo": "Ingreso",
+          "monto": 5000000,
+          "fecha": "17/7/2025, 8:19:20 a. m."
+        },
+        {
+          "tipo": "Ingreso",
+          "monto": 2000000,
+          "fecha": "17/7/2025, 8:19:36 a. m."
+        },
+        {
+          "tipo": "Envío",
+          "monto": -10000,
+          "fecha": "17/7/2025, 10:33:58 a. m.",
+          "a": "santi@gmail.com"
+        },
+        {
+          "tipo": "Envío",
+          "monto": -5000,
+          "fecha": "17/7/2025, 10:35:31 a. m.",
+          "a": "santi@gmail.com"
+        },
+        {
+          "tipo": "Recibido",
+          "monto": 20000,
+          "fecha": "17/7/2025, 10:36:45 a. m.",
+          "de": "salo@g"
+        },
+        {
+          "tipo": "Recibido",
+          "monto": 400000000,
+          "fecha": "17/7/2025, 10:37:01 a. m.",
+          "de": "salo@g"
+        }
+      ]
+    },
+    {
+      "id": "62d5",
+      "name": "salo",
+      "email": "salo@g",
+      "password": "123",
+      "balance": 99972000,
+      "transactions": [
+        {
+          "tipo": "Ingreso",
+          "monto": 500000000,
+          "fecha": "17/7/2025, 10:36:23 a. m."
+        },
+        {
+          "tipo": "Envío",
+          "monto": -20000,
+          "fecha": "17/7/2025, 10:36:45 a. m.",
+          "a": "goku@gmail.com"
+        },
+        {
+          "tipo": "Envío",
+          "monto": -400000000,
+          "fecha": "17/7/2025, 10:37:01 a. m.",
+          "a": "goku@gmail.com"
+        },
+        {
+          "tipo": "Envío",
+          "monto": -4000,
+          "fecha": "17/7/2025, 10:37:17 a. m.",
+          "a": "santi@gmail.com"
+        },
+        {
+          "tipo": "Envío",
+          "monto": -4000,
+          "fecha": "17/7/2025, 10:39:30 a. m.",
+          "a": "santi@gmail.com"
+        }
+      ]
+    }
+  ]
+}
